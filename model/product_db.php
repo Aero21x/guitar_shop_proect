@@ -66,7 +66,7 @@ function add_product($category_id, $code, $name, $description,
     global $db;
     $query = 'INSERT INTO products
                  (categoryID, productCode, productName, description, listPrice,
-                  discountPercent, dateAdded)
+                  discountPercent, dateAdded, onHand)
               VALUES
                  (:category_id, :code, :name, :description, :price,
                   :discount_percent, NOW())';
@@ -78,6 +78,7 @@ function add_product($category_id, $code, $name, $description,
         $statement->bindValue(':description', $description);
         $statement->bindValue(':price', $price);
         $statement->bindValue(':discount_percent', $discount_percent);
+        $statement->bindValue(':on_hand', $on_hand);
         $statement->execute();
         $statement->closeCursor();
 
@@ -101,6 +102,7 @@ function update_product($product_id, $code, $name, $desc,
             listPrice = :price,
             discountPercent = :discount,
             categoryID = :category_id
+            onHand = :on_hand
         WHERE productID = :product_id';
     try {
         $statement = $db->prepare($query);
@@ -111,6 +113,7 @@ function update_product($product_id, $code, $name, $desc,
         $statement->bindValue(':discount', $discount);
         $statement->bindValue(':category_id', $category_id);
         $statement->bindValue(':product_id', $product_id);
+        $statement->bindValue(':on_hand', $on_hand);
         $statement->execute();
         $statement->closeCursor();
     } catch (PDOException $e) {
@@ -131,23 +134,5 @@ function delete_product($product_id) {
         $error_message = $e->getMessage();
         display_db_error($error_message);
     }
-}
-
-function decrement_product_count($product_id, $quantity) {
-    global $db;
-    $query = 'UPDATE products
-              SET onHand = onHand - :quantity
-              WHERE productID = :product_id';
-    try {
-        $statement = $db->prepare($query);
-        $statement->bindValue(':product_id', $product_id);
-        $statement->bindValue(':quantity', $quantity);
-        $statement->execute();
-        $statement->closeCursor();
-    } catch (PDOException $e) {
-        $error_message = $e->getMessage();
-        display_db_error($error_message);
-    }
-            
 }
 ?>

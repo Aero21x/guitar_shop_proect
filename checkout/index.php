@@ -1,9 +1,7 @@
 <?php
 require_once('../util/main.php');
-require_once('util/secure_conn.php');
+// require_once('util/secure_conn.php');
 require_once('util/validation.php');
-
-require_once('mail/index.php');
 
 require_once('model/cart.php');
 require_once('model/product_db.php');
@@ -114,10 +112,7 @@ switch ($action) {
             $quantity = $item['quantity'];
             add_order_item($order_id, $product_id,
                            $item_price, $discount, $quantity);
-            decrement_product_count($product_id, $quantity); //insert new function into loop to decrease 
-                                                             //quantity onHand
         }
-        send_email($order_id);
         clear_cart();
         redirect('../account?action=view_order&order_id=' . $order_id);
         break;
